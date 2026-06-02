@@ -9,7 +9,7 @@ A responsive web application built to track and manage personal media collection
 - **Deployment:** Vercel
 
 ## Live Demo
-
+https://media-watchlist-z4b4.vercel.app/
 ## Running Locally
 
 To run this project on your local machine:
