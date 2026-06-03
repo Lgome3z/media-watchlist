@@ -1,9 +1,13 @@
+import { useState } from 'react'; 
+
 export interface MediaItem {
   id: number;
   title: string;
   category: "film" | "soundtrack" | "audiobook";
   status: "want to watch" | "watched";
 }
+
+
 
 const mockWatchlist: MediaItem[] = [
   {
@@ -26,6 +30,8 @@ const mockWatchlist: MediaItem[] = [
   }
 ];
 
+
+
 export default function App() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
@@ -43,3 +49,13 @@ export default function App() {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
