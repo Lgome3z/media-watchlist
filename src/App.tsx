@@ -46,8 +46,8 @@ export default function App() {
   const [activeCategory, selectActiveCategory]=useState("All")
   function changeCategory() {
     if (activeCategory==="All")
-      selectActiveCategory("Movie");
-    else if (activeCategory === "Movie")
+      selectActiveCategory("Film");
+    else if (activeCategory === "Film")
       selectActiveCategory("Soundtrack");
     else if (activeCategory === "Soundtrack")
       selectActiveCategory("All");
