@@ -50,6 +50,8 @@ export default function App() {
     else if (activeCategory === "Film")
       selectActiveCategory("Soundtrack");
     else if (activeCategory === "Soundtrack")
+      selectActiveCategory("Audiobook");
+    else if (activeCategory==="Audiobook")
       selectActiveCategory("All");
   }
 
