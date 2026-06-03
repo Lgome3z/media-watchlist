@@ -33,47 +33,52 @@ const mockWatchlist: MediaItem[] = [
 
 
 export default function App() {
+  const [mode, setMode] = useState("Dark");
+  function changeMode() {
+    if (mode === "Dark") {
+      setMode("Light");
+    } else {
+      setMode("Dark");
+    }
+  }
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold text-white">
-        Media Watchlist!
-      </h1>
-      <div className="mt-8 flex flex-col gap-4">
+    <div className={`min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500 ${
+      mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
+    }`}>
+      
+      <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
+      
+      <div className="flex flex-col gap-4 w-full max-w-md">
         {mockWatchlist.map((item) => (
-          <div key={item.id} className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-            <h2 className="text-xl font-bold text-white">{item.title}</h2>
-            <p className="text-slate-400 capitalize">{item.category} • {item.status}</p>
+          <div 
+            key={item.id} 
+            className={`p-4 rounded-lg border transition-colors duration-500 shadow-md ${
+              mode === "Light" 
+                ? "bg-white border-slate-200" 
+                : "bg-slate-800 border-slate-700"
+            }`}
+          >
+            <h2 className={`text-xl font-bold ${mode === "Light" ? "text-slate-900" : "text-white"}`}>
+              {item.title}
+            </h2>
+            <p className={`capitalize ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
+              {item.category} • {item.status}
+            </p>
           </div>
         ))}
       </div>
+
+      {/* 4. The fixed button in the top left corner */}
+      <button 
+        onClick={changeMode} 
+        className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+      >
+        Switch to {mode === "Dark" ? "Light Mode" : "Dark Mode"}
+      </button>
+
     </div>
-  )
+  );
 }
-
-
-
-function LightMode() {
-  // first step is to identify the current item value thorugh useState
-  const [mode, setMode]= useState("Dark")
-  // second step is to create our javascript switcher function
-  changeMode() {
-    if (mode==="Dark")
-      setMode("Light")
-    else setMode("Dark")
-  }
-  //third step is to create the HTML output for the function
-  return(
-    <button onClick={changeMode} className="bg-white p-4 ml-5 fixed top-0 left-0">
-      Light Mode!
-    </button>
-  )
-
-
-
-
-
-}
-
 
 
 
