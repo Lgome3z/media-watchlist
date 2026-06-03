@@ -52,6 +52,30 @@ export default function App() {
 
 
 
+function LightMode() {
+  // first step is to identify the current item value thorugh useState
+  const [mode, setMode]= useState("Dark")
+  // second step is to create our javascript switcher function
+  changeMode() {
+    if (mode==="Dark")
+      setMode("Light")
+    else setMode("Dark")
+  }
+  //third step is to create the HTML output for the function
+  return(
+    <button onClick={changeMode} className="bg-white p-4 ml-5 fixed top-0 left-0">
+      Light Mode!
+    </button>
+  )
+
+
+
+
+
+}
+
+
+
 
 
 
