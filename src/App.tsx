@@ -33,7 +33,7 @@ const mockWatchlist: MediaItem[] = [
 
 
 export default function App() {
-  //LIGHTMODE STARTING STATE AND SWITCH FUNCTION
+  //LIGHTMODE STARTING STATE AND SWITCH FUNCTION//
   const [mode, setMode] = useState("Dark");
   function changeMode() {
     if (mode === "Dark") {
@@ -42,7 +42,7 @@ export default function App() {
       setMode("Dark");
     }
   }
-//FILTER STARTING STATE AND SWITCH FUNCTION
+//FILTER STARTING STATE AND SWITCH FUNCTION//
   const [activeCategory, selectActiveCategory]=useState("All")
   function changeCategory() {
     if (activeCategory==="All")
@@ -53,15 +53,13 @@ export default function App() {
       selectActiveCategory("All");
   }
 
-//HTML RETURN
+//HTML RETURN //
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500 ${
+    <div className={`min-h-screen flex flex-col items-center justify-start p-8 transition-colors duration-500 ${
       mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
     }`}>
-      <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
-
-
-
+      <h1 className=" text-4xl mt-18 font-bold mb-8">Media Watchlist!</h1>
+    
       <div className="flex gap-4 mb-4">
         <button onClick={changeCategory} 
         className="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all">
@@ -98,7 +96,7 @@ export default function App() {
 
       <button 
         onClick={changeMode} 
-        className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+        className="fixed top-4 left-2 bg-sky-600 text-white font-sm font-medium p-2.5 rounded-full shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
       >
         Switch to {mode === "Dark" ? "Light Mode" : "Dark Mode"}
       </button>
@@ -106,6 +104,7 @@ export default function App() {
     </div>
   );
 }
+
 
 
 
