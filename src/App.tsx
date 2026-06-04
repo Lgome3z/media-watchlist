@@ -37,6 +37,8 @@ export default function App() {
   const [activeCategory, selectActiveCategory] = useState("All");
   const [newTitle, setNewTitle] = useState("");
   const [watchlist, setWatchlist] = useState(mockWatchlist);
+  const [newcateogry, setNewCategory] = useState("film")
+  const [newstatus, setNewSatus] = useState("want to watch")
 
   function changeMode() {
     if (mode === "Dark") {
@@ -52,9 +54,10 @@ export default function App() {
     } else if (activeCategory === "Film") {
       selectActiveCategory("Soundtrack");
     } else if (activeCategory === "Soundtrack") {
-      selectActiveCategory("All");
+      selectActiveCategory("Audiobook");}
+      else if (activeCategory=== "Audiobook") {
+      selectActiveCategory("All");}
     }
-  }
 
   function addItem() {
     if (newTitle.trim() === "") return;
@@ -62,8 +65,8 @@ export default function App() {
     const newItem = {
       id: Date.now().toString(),
       title: newTitle,
-      category: "Film",
-      status: "Plan to Watch"
+      category: newcateogry,
+      status: newstatus
     };
 
     setWatchlist([...watchlist, newItem]);
@@ -77,14 +80,38 @@ export default function App() {
       
       <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
 
-      <div className="flex gap-2 mb-6 w-full max-w-md">
+      <div className="flex gap-2 mb-6 w-full max-w-md justify-center">
         <input 
           type="text"
           placeholder="Add new media..." 
           value={newTitle} 
           onChange={(e) => setNewTitle(e.target.value)} 
-          className="p-3 border rounded-lg text-black flex-grow shadow-sm"
+          className={mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
         />
+
+
+<select //DROP DOWN MENU
+  value={newcateogry}
+  onChange={(e) => setNewCategory(e.target.value)}
+  className={mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+>
+  <option value="Film">film</option>
+  <option value="Soundtrack">soundtrack</option>
+  <option value="Audiobook">audiobook</option>
+</select>
+
+<select 
+  value={newstatus}
+  onChange={(e) => setNewSatus(e.target.value)}
+  className= {mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+>
+  <option value="Want to Watch">Want to Watch</option>
+  <option value="Watched">Watched</option>
+</select>
+
+        
+
+        
         <button 
           onClick={addItem}
           className="bg-emerald-600 text-white font-bold px-5 rounded-lg shadow-md hover:bg-emerald-500 active:scale-95 transition-all"
@@ -136,5 +163,4 @@ export default function App() {
       </button>
 
     </div>
-  );
-}
+  );}
