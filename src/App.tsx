@@ -73,17 +73,23 @@ export default function App() {
     setNewTitle("");
   }
 
+  function removeItem(id) {
+    setWatchlist(watchlist.filter(item => item.id !== id));
+  }
+
+
+//HTML RETURN
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
+    <div className={`min-h-screen  flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
       mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
     }`}>
       
       <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
 
       <div className="flex gap-2 mb-6 w-full max-w-md justify-center">
-        <input 
+        <input
           type="text"
-          placeholder="Add new media..." 
+          placeholder="Add new media..."
           value={newTitle} 
           onChange={(e) => setNewTitle(e.target.value)} 
           className={mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
@@ -149,11 +155,20 @@ export default function App() {
               </h2>
               <p className={`capitalize ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
                 {item.category} • {item.status}
+
+                <button 
+                onClick={() => removeItem(item.id)}
+                className="text-red-500 hover:text-red-700 font-medium text-sm transition-colors px-2 py-1 rounded flex justify-self-end"
+              >
+                Remove
+              </button>
               </p>
+              
             </div>
           );
         })}
       </div>
+      
 
       <button 
         onClick={changeMode} 
