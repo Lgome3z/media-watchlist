@@ -1,10 +1,9 @@
 import { useState } from 'react'; 
-//INTERFACE
 export interface MediaItem {
-  id: number;
+  id: string | number; 
   title: string;
-  category: "film" | "soundtrack" | "audiobook";
-  status: "want to watch" | "watched";
+  category: string;    
+  status: string;    
 }
 
 
@@ -73,9 +72,9 @@ export default function App() {
     setNewTitle("");
   }
 
-  function removeItem(id) {
-    setWatchlist(watchlist.filter(item => item.id !== id));
-  }
+  function removeItem(id: string | number) {
+  setWatchlist(watchlist.filter(item => item.id !== id));
+}
 
 
 //HTML RETURN
