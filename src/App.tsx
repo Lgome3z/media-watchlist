@@ -1,4 +1,5 @@
-import { useState } from 'react'; 
+import { useState, useEffect } from 'react'; 
+
 export interface MediaItem {
   id: string | number; 
   title: string;
@@ -6,38 +7,29 @@ export interface MediaItem {
   status: string;    
 }
 
-
-//TEMPORARY LIST
 const mockWatchlist: MediaItem[] = [
-  {
-    id: 1,
-    title: "Project Hail Mary",
-    category: "film",
-    status: "watched"
-  },
-  {
-    id: 2,
-    title: "Edward Tulane",
-    category: "audiobook",
-    status: "want to watch"
-  },
-  {
-    id: 3,
-    title: "Interstellar Original Motion Picture Soundtrack",
-    category: "soundtrack",
-    status: "watched"
-  }
+  { id: 1, title: "Project Hail Mary", category: "Movie", status: "watched" },
+  { id: 2, title: "Edward Tulane", category: "Audiobook", status: "want to watch" },
+  { id: 3, title: "Interstellar Original Motion Picture Soundtrack", category: "Soundtrack", status: "watched" }
 ];
-
-
 
 export default function App() {
   const [mode, setMode] = useState("Dark");
   const [activeCategory, selectActiveCategory] = useState("All");
   const [newTitle, setNewTitle] = useState("");
-  const [watchlist, setWatchlist] = useState(mockWatchlist);
-  const [newcateogry, setNewCategory] = useState("film")
-  const [newstatus, setNewSatus] = useState("want to watch")
+  const [watchlist, setWatchlist] = useState<MediaItem[]>([]);
+  const [newCategory, setNewCategory] = useState("Movie");
+  const [newStatus, setNewStatus] = useState("Want to Watch");
+
+  // Fetch data automatically from backend port 5001
+  useEffect(() => {
+    fetch('http://localhost:5001/api/watchlist')
+      .then(response => response.json())
+      .then(data => {
+        setWatchlist(data);
+      })
+      .catch(error => console.error("Error fetching watchlist from backend:", error));
+  }, []);
 
   function changeMode() {
     if (mode === "Dark") {
@@ -49,14 +41,15 @@ export default function App() {
 
   function changeCategory() {
     if (activeCategory === "All") {
-      selectActiveCategory("Film");
-    } else if (activeCategory === "Film") {
+      selectActiveCategory("Movie");
+    } else if (activeCategory === "Movie") {
       selectActiveCategory("Soundtrack");
     } else if (activeCategory === "Soundtrack") {
-      selectActiveCategory("Audiobook");}
-      else if (activeCategory=== "Audiobook") {
-      selectActiveCategory("All");}
+      selectActiveCategory("Audiobook");
+    } else if (activeCategory === "Audiobook") {
+      selectActiveCategory("All");
     }
+  }
 
   function addItem() {
     if (newTitle.trim() === "") return;
@@ -64,22 +57,30 @@ export default function App() {
     const newItem = {
       id: Date.now().toString(),
       title: newTitle,
-      category: newcateogry,
-      status: newstatus
+      category: newCategory,
+      status: newStatus
     };
 
     setWatchlist([...watchlist, newItem]);
     setNewTitle("");
   }
 
-  function removeItem(id: string | number) {
-  setWatchlist(watchlist.filter(item => item.id !== id));
+ function removeItem(id: string | number) {
+  // 1. Send a DELETE request to the server with the item's unique ID barcode
+  fetch(`http://localhost:5001/api/watchlist/${id}`, {
+    method: 'DELETE',
+  })
+    .then(response => response.json())
+    .then(updatedList => {
+      // 2. The server sends back the fresh list without that item. Update the screen!
+      setWatchlist(updatedList);
+    })
+    .catch(error => console.error("Error removing item from backend:", error));
 }
 
-
-//HTML RETURN
+  // HTML RETURN
   return (
-    <div className={`min-h-screen  flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
+    <div className={`min-h-screen flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
       mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
     }`}>
       
@@ -91,31 +92,27 @@ export default function App() {
           placeholder="Add new media..."
           value={newTitle} 
           onChange={(e) => setNewTitle(e.target.value)} 
-          className={mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
         />
 
+        <select 
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+        >
+          <option value="Movie">Movie</option>
+          <option value="Soundtrack">Soundtrack</option>
+          <option value="Audiobook">Audiobook</option>
+        </select>
 
-<select //DROP DOWN MENU
-  value={newcateogry}
-  onChange={(e) => setNewCategory(e.target.value)}
-  className={mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
->
-  <option value="Film">film</option>
-  <option value="Soundtrack">soundtrack</option>
-  <option value="Audiobook">audiobook</option>
-</select>
-
-<select 
-  value={newstatus}
-  onChange={(e) => setNewSatus(e.target.value)}
-  className= {mode==="Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors": "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
->
-  <option value="Want to Watch">Want to Watch</option>
-  <option value="Watched">Watched</option>
-</select>
-
-        
-
+        <select 
+          value={newStatus}
+          onChange={(e) => setNewStatus(e.target.value)}
+          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+        >
+          <option value="Want to Watch">Want to Watch</option>
+          <option value="Watched">Watched</option>
+        </select>
         
         <button 
           onClick={addItem}
@@ -152,23 +149,21 @@ export default function App() {
               <h2 className={`text-xl font-bold ${mode === "Light" ? "text-slate-900" : "text-white"}`}>
                 {item.title}
               </h2>
-              <p className={`capitalize ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
-                {item.category} • {item.status}
+              <div className={`flex justify-between items-center capitalize mt-1 ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
+                <span>{item.category} • {item.status}</span>
 
                 <button 
-                onClick={() => removeItem(item.id)}
-                className="text-red-500 hover:text-red-700 font-medium text-sm transition-colors px-2 py-1 rounded flex justify-self-end"
-              >
-                Remove
-              </button>
-              </p>
-              
+                  onClick={() => removeItem(item.id)}
+                  className="text-red-500 hover:text-red-700 font-medium text-sm transition-colors px-2 py-1 rounded"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           );
         })}
       </div>
       
-
       <button 
         onClick={changeMode} 
         className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
@@ -177,4 +172,5 @@ export default function App() {
       </button>
 
     </div>
-  );}
+  );
+}
