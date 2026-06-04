@@ -33,8 +33,11 @@ const mockWatchlist: MediaItem[] = [
 
 
 export default function App() {
-  //LIGHTMODE STARTING STATE AND SWITCH FUNCTION//
   const [mode, setMode] = useState("Dark");
+  const [activeCategory, selectActiveCategory] = useState("All");
+  const [newTitle, setNewTitle] = useState("");
+  const [watchlist, setWatchlist] = useState(mockWatchlist);
+
   function changeMode() {
     if (mode === "Dark") {
       setMode("Light");
@@ -42,63 +45,92 @@ export default function App() {
       setMode("Dark");
     }
   }
-//FILTER STARTING STATE AND SWITCH FUNCTION//
-  const [activeCategory, selectActiveCategory]=useState("All")
+
   function changeCategory() {
-    if (activeCategory==="All")
+    if (activeCategory === "All") {
       selectActiveCategory("Film");
-    else if (activeCategory === "Film")
+    } else if (activeCategory === "Film") {
       selectActiveCategory("Soundtrack");
-    else if (activeCategory === "Soundtrack")
-      selectActiveCategory("Audiobook");
-    else if (activeCategory==="Audiobook")
+    } else if (activeCategory === "Soundtrack") {
       selectActiveCategory("All");
+    }
   }
 
-//HTML RETURN //
+  function addItem() {
+    if (newTitle.trim() === "") return;
+
+    const newItem = {
+      id: Date.now().toString(),
+      title: newTitle,
+      category: "Film",
+      status: "Plan to Watch"
+    };
+
+    setWatchlist([...watchlist, newItem]);
+    setNewTitle("");
+  }
+
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-start p-8 transition-colors duration-500 ${
+    <div className={`min-h-screen flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
       mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
     }`}>
-      <h1 className=" text-4xl mt-18 font-bold mb-8">Media Watchlist!</h1>
-    
-      <div className="flex gap-4 mb-4">
-        <button onClick={changeCategory} 
-        className="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all">
-          {activeCategory}
+      
+      <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
+
+      <div className="flex gap-2 mb-6 w-full max-w-md">
+        <input 
+          type="text"
+          placeholder="Add new media..." 
+          value={newTitle} 
+          onChange={(e) => setNewTitle(e.target.value)} 
+          className="p-3 border rounded-lg text-black flex-grow shadow-sm"
+        />
+        <button 
+          onClick={addItem}
+          className="bg-emerald-600 text-white font-bold px-5 rounded-lg shadow-md hover:bg-emerald-500 active:scale-95 transition-all"
+        >
+          Add
         </button>
       </div>
 
+      <div className="flex gap-4 mb-4">
+        <button 
+          onClick={changeCategory} 
+          className="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+        >
+          Filter: {activeCategory}
+        </button>
+      </div>
 
       <div className="flex flex-col gap-4 w-full max-w-md">
-        {mockWatchlist.map((item) => {
-        if (activeCategory!== "All" && item.category.toLocaleLowerCase() !== activeCategory.toLocaleLowerCase()) {
-          return null;}
-        return (
-          <div 
-            key={item.id} 
-            className={`p-4 rounded-lg border transition-colors duration-500 shadow-md ${
-              mode === "Light" 
-                ? "bg-white border-slate-200" 
-                : "bg-slate-800 border-slate-700"
-            }`}
-          >
-            <h2 className={`text-xl font-bold ${mode === "Light" ? "text-slate-900" : "text-white"}`}>
-              {item.title}
-            </h2>
-            <p className={`capitalize ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
-              {item.category} • {item.status}
-            </p>
-          </div>
-        );
+        {watchlist.map((item) => {
+          if (activeCategory !== "All" && item.category.toLowerCase() !== activeCategory.toLowerCase()) {
+            return null; 
+          }
+        
+          return (
+            <div 
+              key={item.id} 
+              className={`p-4 rounded-lg border transition-colors duration-500 shadow-md ${
+                mode === "Light" 
+                  ? "bg-white border-slate-200" 
+                  : "bg-slate-800 border-slate-700"
+              }`}
+            >
+              <h2 className={`text-xl font-bold ${mode === "Light" ? "text-slate-900" : "text-white"}`}>
+                {item.title}
+              </h2>
+              <p className={`capitalize ${mode === "Light" ? "text-slate-500" : "text-slate-400"}`}>
+                {item.category} • {item.status}
+              </p>
+            </div>
+          );
         })}
       </div>
 
-
-
       <button 
         onClick={changeMode} 
-        className="fixed top-4 left-2 bg-sky-600 text-white font-sm font-medium p-2.5 rounded-full shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+        className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
       >
         Switch to {mode === "Dark" ? "Light Mode" : "Dark Mode"}
       </button>
@@ -106,13 +138,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
