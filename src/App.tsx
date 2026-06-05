@@ -1,4 +1,4 @@
-import { useState } from 'react'; 
+import { useState, useEffect } from 'react'; 
 
 export interface MediaItem {
   id: string | number; 
@@ -7,21 +7,23 @@ export interface MediaItem {
   status: string;    
 }
 
-// Brought back the local list so the app works anywhere without a backend server
-const mockWatchlist: MediaItem[] = [
-  { id: 1, title: "Inception", category: "Movie", status: "Watched" },
-  { id: 2, title: "Interstellar", category: "Movie", status: "Want to Watch" },
-  { id: 3, title: "Edward Tulane", category: "Audiobook", status: "Want to Watch" },
-  { id: 4, title: "Project Hail Mary", category: "Soundtrack", status: "Watched" }
-];
-
 export default function App() {
   const [mode, setMode] = useState("Dark");
   const [activeCategory, selectActiveCategory] = useState("All");
   const [newTitle, setNewTitle] = useState("");
-  const [watchlist, setWatchlist] = useState<MediaItem[]>(mockWatchlist); // Initialized with mock data
+  const [watchlist, setWatchlist] = useState<MediaItem[]>([]);
   const [newCategory, setNewCategory] = useState("Movie");
   const [newStatus, setNewStatus] = useState("Want to Watch");
+
+  // Fetch data automatically from backend port 5001
+  useEffect(() => {
+    fetch('http://localhost:5001/api/watchlist')
+      .then(response => response.json())
+      .then(data => {
+        setWatchlist(data);
+      })
+      .catch(error => console.error("Error fetching watchlist from backend:", error));
+  }, []);
 
   function changeMode() {
     if (mode === "Dark") {
@@ -53,14 +55,30 @@ export default function App() {
       status: newStatus
     };
 
-    // Updates state strictly locally
-    setWatchlist([...watchlist, newItem]);
-    setNewTitle("");
+    fetch('http://localhost:5001/api/watchlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newItem),
+    })
+      .then(response => response.json())
+      .then(updatedList => {
+        setWatchlist(updatedList);
+        setNewTitle("");
+      })
+      .catch(error => console.error("Error adding item to backend:", error));
   }
 
   function removeItem(id: string | number) {
-    // Updates state strictly locally
-    setWatchlist(watchlist.filter(item => item.id !== id));
+    fetch(`http://localhost:5001/api/watchlist/${id}`, {
+      method: 'DELETE',
+    })
+      .then(response => response.json())
+      .then(updatedList => {
+        setWatchlist(updatedList);
+      })
+      .catch(error => console.error("Error removing item from backend:", error));
   }
 
   return (
@@ -70,6 +88,7 @@ export default function App() {
       
       <h1 className="text-4xl font-bold mb-8 text-center">Media Watchlist!</h1>
 
+      {/* MOBILE RESPONSIVE CHANGE: Stacks elements vertically via flex-col on mobile, converts to flex-row on screens sm and up, and added edge-padding */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6 w-full max-w-md justify-center px-2">
         <input
           type="text"
