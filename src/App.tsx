@@ -17,7 +17,7 @@ export default function App() {
 
   // Fetch data automatically from backend port 5001
   useEffect(() => {
-    fetch('http://localhost:5001/api/watchlist')
+    fetch('https://reversing-probe-monogram.ngrok-free.dev')
       .then(response => response.json())
       .then(data => {
         setWatchlist(data);
@@ -55,7 +55,7 @@ export default function App() {
       status: newStatus
     };
 
-    fetch('http://localhost:5001/api/watchlist', {
+    fetch('https://reversing-probe-monogram.ngrok-free.dev', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default function App() {
   }
 
   function removeItem(id: string | number) {
-    fetch(`http://localhost:5001/api/watchlist/${id}`, {
+    fetch(`https://reversing-probe-monogram.ngrok-free.dev${id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
