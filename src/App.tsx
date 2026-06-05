@@ -52,18 +52,32 @@ export default function App() {
   }
 
   function addItem() {
-    if (newTitle.trim() === "") return;
+  if (newTitle.trim() === "") return;
 
-    const newItem = {
-      id: Date.now().toString(),
-      title: newTitle,
-      category: newCategory,
-      status: newStatus
-    };
+  // 1. Assemble the fresh item object structure
+  const newItem = {
+    id: Date.now().toString(), // Generates a unique timestamp string barcode
+    title: newTitle,
+    category: newCategory,
+    status: newStatus
+  };
 
-    setWatchlist([...watchlist, newItem]);
-    setNewTitle("");
-  }
+  // 2. Shoot a POST network request to hand this data to our Express server
+  fetch('http://localhost:5001/api/watchlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newItem), // Convert our JavaScript object into a text stream string
+  })
+    .then(response => response.json())
+    .then(updatedList => {
+      // 3. Pour the server's freshly updated list directly into our React state
+      setWatchlist(updatedList); 
+      setNewTitle(""); // Clear out the input bar for the next entry
+    })
+    .catch(error => console.error("Error adding item to backend:", error));
+}
 
  function removeItem(id: string | number) { // GO OVER THIS
   // 1. Send a DELETE request to the server with the item's unique ID barcode
