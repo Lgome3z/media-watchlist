@@ -7,7 +7,6 @@ export interface MediaItem {
   status: string;    
 }
 
-
 export default function App() {
   const [mode, setMode] = useState("Dark");
   const [activeCategory, selectActiveCategory] = useState("All");
@@ -47,100 +46,97 @@ export default function App() {
   }
 
   function addItem() {
-  if (newTitle.trim() === "") return;
+    if (newTitle.trim() === "") return;
 
-  // 1. Assemble the fresh item object structure
-  const newItem = {
-    id: Date.now().toString(), // Generates a unique timestamp string barcode
-    title: newTitle,
-    category: newCategory,
-    status: newStatus
-  };
+    const newItem = {
+      id: Date.now().toString(),
+      title: newTitle,
+      category: newCategory,
+      status: newStatus
+    };
 
-  // 2. Shoot a POST network request to hand this data to our Express server
-  fetch('http://localhost:5001/api/watchlist', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(newItem), // Convert our JavaScript object into a text stream string
-  })
-    .then(response => response.json())
-    .then(updatedList => {
-      // 3. Pour the server's freshly updated list directly into our React state
-      setWatchlist(updatedList); 
-      setNewTitle(""); // Clear out the input bar for the next entry
+    fetch('http://localhost:5001/api/watchlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newItem),
     })
-    .catch(error => console.error("Error adding item to backend:", error));
-}
+      .then(response => response.json())
+      .then(updatedList => {
+        setWatchlist(updatedList);
+        setNewTitle("");
+      })
+      .catch(error => console.error("Error adding item to backend:", error));
+  }
 
- function removeItem(id: string | number) { // GO OVER THIS
-  // 1. Send a DELETE request to the server with the item's unique ID barcode
-  fetch(`http://localhost:5001/api/watchlist/${id}`, {
-    method: 'DELETE',
-  })
-    .then(response => response.json())
-    .then(updatedList => {
-      // 2. The server sends back the fresh list without that item. Update the screen!
-      setWatchlist(updatedList);
+  function removeItem(id: string | number) {
+    fetch(`http://localhost:5001/api/watchlist/${id}`, {
+      method: 'DELETE',
     })
-    .catch(error => console.error("Error removing item from backend:", error));
-}
+      .then(response => response.json())
+      .then(updatedList => {
+        setWatchlist(updatedList);
+      })
+      .catch(error => console.error("Error removing item from backend:", error));
+  }
 
-  // HTML RETURN
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-start pt-16 px-8 pb-8 transition-colors duration-500 ${
+    <div className={`min-h-screen flex flex-col items-center justify-start pt-24 px-4 pb-8 transition-colors duration-500 ${
       mode === "Light" ? "bg-slate-100 text-slate-900" : "bg-slate-900 text-white"
     }`}>
       
-      <h1 className="text-4xl font-bold mb-8">Media Watchlist!</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">Media Watchlist!</h1>
 
-      <div className="flex gap-2 mb-6 w-full max-w-md justify-center">
+      {/* MOBILE RESPONSIVE CHANGE: Stacks elements vertically via flex-col on mobile, converts to flex-row on screens sm and up, and added edge-padding */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-6 w-full max-w-md justify-center px-2">
         <input
           type="text"
           placeholder="Add new media..."
           value={newTitle} 
           onChange={(e) => setNewTitle(e.target.value)} 
-          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
+          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors w-full" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors bg-slate-800 w-full"}
         />
 
-        <select 
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
-        >
-          <option value="Movie">Movie</option>
-          <option value="Soundtrack">Soundtrack</option>
-          <option value="Audiobook">Audiobook</option>
-        </select>
+        <div className="flex gap-2 w-full">
+          <select 
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors bg-white w-1/2" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors bg-slate-800 w-1/2"}
+          >
+            <option value="Movie">Movie</option>
+            <option value="Soundtrack">Soundtrack</option>
+            <option value="Audiobook">Audiobook</option>
+          </select>
 
-        <select 
-          value={newStatus}
-          onChange={(e) => setNewStatus(e.target.value)}
-          className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors"}
-        >
-          <option value="Want to Watch">Want to Watch</option>
-          <option value="Watched">Watched</option>
-        </select>
+          <select 
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
+            className={mode === "Light" ? "p-3 border rounded-lg text-black flex-grow shadow-sm transition-colors bg-white w-1/2" : "p-3 border rounded-lg text-white flex-grow shadow-sm transition-colors bg-slate-800 w-1/2"}
+          >
+            <option value="Want to Watch">Want to Watch</option>
+            <option value="Watched">Watched</option>
+          </select>
+        </div>
         
         <button 
           onClick={addItem}
-          className="bg-emerald-600 text-white font-bold px-5 rounded-lg shadow-md hover:bg-emerald-500 active:scale-95 transition-all"
+          className="bg-emerald-600 text-white font-bold p-3 sm:px-5 rounded-lg shadow-md hover:bg-emerald-500 active:scale-95 transition-all w-full sm:w-auto"
         >
           Add
         </button>
       </div>
 
-      <div className="flex gap-4 mb-4">
+      <div className="flex gap-4 mb-4 w-full max-w-md justify-center px-2">
         <button 
           onClick={changeCategory} 
-          className="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+          className="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all w-full"
         >
           Filter: {activeCategory}
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 w-full max-w-md">
+      <div className="flex flex-col gap-4 w-full max-w-md px-2">
         {watchlist.map((item) => {
           if (activeCategory !== "All" && item.category.toLowerCase() !== activeCategory.toLowerCase()) {
             return null; 
@@ -175,7 +171,7 @@ export default function App() {
       
       <button 
         onClick={changeMode} 
-        className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all"
+        className="fixed top-4 left-4 bg-sky-600 text-white font-bold py-3 px-5 rounded-lg shadow-xl hover:bg-sky-500 active:scale-95 transition-all z-50"
       >
         Switch to {mode === "Dark" ? "Light Mode" : "Dark Mode"}
       </button>
