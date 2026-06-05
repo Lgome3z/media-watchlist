@@ -7,11 +7,6 @@ export interface MediaItem {
   status: string;    
 }
 
-const mockWatchlist: MediaItem[] = [
-  { id: 1, title: "Project Hail Mary", category: "Movie", status: "watched" },
-  { id: 2, title: "Edward Tulane", category: "Audiobook", status: "want to watch" },
-  { id: 3, title: "Interstellar Original Motion Picture Soundtrack", category: "Soundtrack", status: "watched" }
-];
 
 export default function App() {
   const [mode, setMode] = useState("Dark");
