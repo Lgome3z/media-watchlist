@@ -65,7 +65,7 @@ export default function App() {
     setNewTitle("");
   }
 
- function removeItem(id: string | number) {
+ function removeItem(id: string | number) { // GO OVER THIS
   // 1. Send a DELETE request to the server with the item's unique ID barcode
   fetch(`http://localhost:5001/api/watchlist/${id}`, {
     method: 'DELETE',
