@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "./secrets/firebase.ts";
 import type {MediaItem} from "./src/App.tsx"; 
 
 
