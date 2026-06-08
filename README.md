@@ -7,6 +7,7 @@ A responsive web application built to track and manage personal media collection
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **Deployment:** Vercel
+- **DATABASE:** Firebase
 
 ## Live Demo
 https://media-watchlist-z4b4.vercel.app/
