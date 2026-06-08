@@ -1,29 +1,59 @@
 import { useState, useEffect } from 'react'; 
+import { signInWithPopup} from "firebase/auth";
+import { auth, provider} from "../firebase"
+import {useAuth,login,logout} from "../authcontext"
+import {createTestItem, createDbItem, fetchItems,deleteDbItem} from "../listAPI"; 
 
-export interface MediaItem {
-  id: string | number; 
+export type MediaItem = {
+  id: string; 
   title: string;
   category: string;    
   status: string;    
 }
 
 export default function App() {
+  const {user} = useAuth();
   const [mode, setMode] = useState("Dark");
   const [activeCategory, selectActiveCategory] = useState("All");
   const [newTitle, setNewTitle] = useState("");
   const [watchlist, setWatchlist] = useState<MediaItem[]>([]);
   const [newCategory, setNewCategory] = useState("Movie");
   const [newStatus, setNewStatus] = useState("Want to Watch");
+  const [needLoad, setNeedLoad] = useState(true)
 
   // Fetch data automatically from backend port 5001
-  useEffect(() => {
+  /*useEffect(() => {
     fetch('http://localhost:5001/api/watchlist')
       .then(response => response.json())
       .then(data => {
         setWatchlist(data);
       })
       .catch(error => console.error("Error fetching watchlist from backend:", error));
-  }, []);
+  }, []);*/
+
+  // API Loading  
+  
+  
+  useEffect(() => {
+    async function loadItems() {
+      try {
+        const data = await fetchItems(user.uid);
+        setWatchlist(data);
+      } catch (error) {
+        console.error("Error fetching watchlist from backend:", error);
+      } finally {
+       // setIsLoading(false);
+      }
+    }
+    if (user && needLoad) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadItems(); setNeedLoad(false)
+    }
+  }, [user, needLoad]);
+
+
+
+
 
   function changeMode() {
     if (mode === "Dark") {
@@ -45,17 +75,14 @@ export default function App() {
     }
   }
 
-  function addItem() {
-    if (newTitle.trim() === "") return;
+  async function addItem() {
 
-    const newItem = {
-      id: Date.now().toString(),
-      title: newTitle,
-      category: newCategory,
-      status: newStatus
-    };
+    console.log("HI")
+    const newItem = await createDbItem(user.uid, newTitle, newCategory, newStatus);
+    setNeedLoad(true)
+ 
 
-    fetch('http://localhost:5001/api/watchlist', {
+    /*fetch('http://localhost:5001/api/watchlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -67,19 +94,23 @@ export default function App() {
         setWatchlist(updatedList);
         setNewTitle("");
       })
-      .catch(error => console.error("Error adding item to backend:", error));
+      .catch(error => console.error("Error adding item to backend:", error));*/
   }
 
-  function removeItem(id: string | number) {
-    fetch(`http://localhost:5001/api/watchlist/${id}`, {
+  async function removeItem(id: string) {
+    await deleteDbItem(user.uid, id);
+    setNeedLoad(true)
+    /*fetch(`http://localhost:5001/api/watchlist/${id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
       .then(updatedList => {
         setWatchlist(updatedList);
       })
-      .catch(error => console.error("Error removing item from backend:", error));
+      .catch(error => console.error("Error removing item from backend:", error));*/
   }
+  
+
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-start pt-24 px-4 pb-8 transition-colors duration-500 ${
@@ -87,6 +118,12 @@ export default function App() {
     }`}>
       
       <h1 className="text-4xl font-bold mb-8 text-center">Media Watchlist!</h1>
+{user ? (<button onClick={logout}>
+Sign out with Google 
+      </button>) : (<button onClick={login}>
+Sign in with Google 
+      </button>)}
+      
 
       {/* MOBILE RESPONSIVE CHANGE: Stacks elements vertically via flex-col on mobile, converts to flex-row on screens sm and up, and added edge-padding */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6 w-full max-w-md justify-center px-2">
@@ -120,7 +157,7 @@ export default function App() {
         </div>
         
         <button 
-          onClick={addItem}
+          onClick={() => {addItem(); console.log("button")}}
           className="bg-emerald-600 text-white font-bold p-3 sm:px-5 rounded-lg shadow-md hover:bg-emerald-500 active:scale-95 transition-all w-full sm:w-auto"
         >
           Add
@@ -141,6 +178,8 @@ export default function App() {
           if (activeCategory !== "All" && item.category.toLowerCase() !== activeCategory.toLowerCase()) {
             return null; 
           }
+
+          console.log(item.id);
         
           return (
             <div 
